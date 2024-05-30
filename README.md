@@ -1,2 +1,6 @@
 # Co-Curricular-Activities-Tracking-System-Web
-![ezgif com-animated-gif-maker](https://github.com/Loai-AL-Sabahi/Co-Curricular-Activities-Tracking-System-Web/assets/94771355/bf85a684-2baa-4c76-8b82-d8ae9d1b3f96)
+
+# Admin View:
+![Admin-View](https://github.com/Loai-AL-Sabahi/Co-Curricular-Activities-Tracking-System-Web/assets/94771355/df1f67c5-e617-43f9-b635-0b9a7eb1fe3f)
+
+
