@@ -1,0 +1,39 @@
+<%= form_with(model: activity) do |form| %>
+  <% if @activity.errors.any? %>
+    <div class="alert alert-danger">
+      <h2><%= pluralize(@activity.errors.count, "error") %> prohibited this activity from being saved:</h2>
+      <ul>
+        <% @activity.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<div class="mb-3">
+  <%= form.text_field :activity_title, required: true, class: "form-control", id: "floatingTitle", placeholder: "Activity Title" %>
+</div>
+  <div class="mb-3">
+    <%= form.text_area :description, class: "form-control", id: "floatingTextarea", placeholder: "Description" %>
+  </div>
+<div class="mb-3">
+  <%= form.date_field :start_date, required: true, class: "form-control", id: "floatingStartDate", placeholder: "Start Date" %>
+</div>
+<div class="mb-3">
+  <%= form.date_field :end_date, required: true, class: "form-control", id: "floatingEndDate", placeholder: "End Date" %>
+</div>
+
+<script>
+  document.getElementById('floatingStartDate').addEventListener('change', function() {
+    document.getElementById('floatingEndDate').min = this.value;
+  });
+</script>
+<div class="mb-3">
+  <%= form.text_field :requested_budget, required: true, pattern: "\\d*", title: "Only numbers are allowed.", class: "form-control", id: "floatingBudget", placeholder: "Requested Budget (RM)"  %>
+</div>
+  <div class="mb-3">
+    <%= form.select :club_id, options_for_select(current_user.club_advisors.map { |club_advisor| [club_advisor.club.name, club_advisor.club.id] }), {}, { class: "form-control", id: "floatingClubID", placeholder: "Select Club" } %>
+ </div>
+  <div>
+    <%= form.submit "Submit Activity",  class: "btn btn-success col-12" %>
+  </div>
+<% end %>

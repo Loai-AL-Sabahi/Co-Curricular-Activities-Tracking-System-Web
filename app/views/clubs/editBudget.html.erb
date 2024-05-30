@@ -1,0 +1,55 @@
+<% content_for :javascript do %>
+  <script>
+    function updateBudget(clubId) {
+      var budgetValue = document.getElementById('budget-' + clubId).value;
+      var token = document.getElementsByName('csrf-token')[0].content;
+
+      fetch('/clubs/' + clubId, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': token
+        },
+        body: JSON.stringify({ club: { budget: budgetValue, update_type: 'budget' } })
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        // Handle the response, for example, display an alert
+        if (data.success) {
+          alert('Budget was successfully updated.');
+        } else {
+          alert('Failed to update budget.');
+        }
+      });
+    }
+  </script>
+<% end %>
+
+<h1>Clubs</h1>
+
+<table class="table table-striped">
+  <thead >
+    <tr>
+      <th>Club Id</th>
+      <th>Name</th>
+      <th>Budget(RM)</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @clubs.each do |club| %>
+      <tr>
+        <td data-label = "Club Id"><%= club.id %></td>
+        <td data-label = "Name"><%= club.name %></td>
+        <td>
+          <input type="number" id="budget-<%= club.id %>" value="<%= number_with_precision(club.budget, precision: 2) %>" />
+          <button class="btn btn-primary" onclick="updateBudget(<%= club.id %>)">Allocate Budget</button>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= link_to 'Back to Finance', finance_clubs_path, class: 'btn btn-primary mb-3 col-12' %>

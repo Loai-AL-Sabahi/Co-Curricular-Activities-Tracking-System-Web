@@ -1,0 +1,26 @@
+<!-- _upcoming_event.html.erb -->
+    <%= stylesheet_link_tag "upcomingEvents" %>
+
+<div class="card upcoming-events-card">
+  <p style="font-weight: normal; font-size: 25px">Upcoming Activities</p>
+  <div>
+<table class="default-table" style="margin-bottom: 10%;">
+        <% if @upcoming_activities.present? %>
+        <% @upcoming_activities.each do |activity| %>
+          <tr>
+            <td></td> <!-- Your empty column -->
+            <td>
+              <%= activity.activity_title %><br>
+              <%= activity.description %><br>
+              <div class="float"><%= activity.start_date %> - <%= activity.end_date%></div>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td></td><td colspan="2">No upcoming activities</td>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+</div>

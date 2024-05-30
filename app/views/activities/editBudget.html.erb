@@ -1,0 +1,93 @@
+<% content_for :javascript do %>
+
+
+<script>
+  async function updateBudget(activityId, status) {
+    const token = document.getElementsByName('csrf-token')[0].content;
+
+    try {
+      const response = await fetch(`/activities/${activityId}.json?activity[status]=${status}&activity[update_type]=status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRF-Token': token
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        handleUpdateResponse(data, activityId);
+      } else {
+        const errorData = await response.json(); // Attempt to get more error details
+        console.error('Error updating budget:', errorData);
+        alert('Error updating budget. Can not approve or reject anymore.');
+      }
+    } catch (error) {
+      console.error('Exception:', error);
+      alert('Error updating budget. Can not approve or reject anymore.');
+    }
+  }
+
+  function handleUpdateResponse(data, activityId) {
+    console.log('Update response data:', data);
+    console.log('Activity ID:', activityId);
+
+    const statusColumn = document.getElementById(`status-${activityId}`);
+    if (statusColumn) {
+      statusColumn.innerHTML = data.status.charAt(0).toUpperCase() + data.status.slice(1).toLowerCase();
+
+      if (data.status === 'Rejected') {
+        alert('Budget Rejected');
+      } else if (data.status === 'Approved') {
+        alert('Budget Approved');
+      } else {
+        alert('Unexpected response. Please check the console for details.');
+      }
+    } else {
+      console.error('Status column not found for activity ID:', activityId);
+      alert('Error updating budget. Can not approve or reject anymore.');
+    }
+  }
+</script>
+<% end %>
+
+<% @activities.group_by { |activity| activity.club.category }.each do |category, category_activities| %>
+  <h1><%= category %> Category Activities</h1>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Activity Id</th>
+        <th>Activity Title</th>
+        <th>Requested Budget(RM)</th>
+        <th>Available Budget(RM)</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% category_activities.each do |activity| %>
+        <tr>
+          <td data-label = "Activity Id"><%= activity.id %></td>
+          <td data-label = "Activity Title"><%= activity.activity_title %></td>
+          <td data-label = "Requested Budget (RM)"><%= number_with_precision(activity.requested_budget, precision: 2) %></td>
+          <td data-label = "Available Budget (RM)", id="available-budget-<%= activity.id %>"><%= number_with_precision(activity.club.budget, precision: 2) %></td>
+          <td data-label = "Status", id="status-<%= activity.id %>"><%= activity.status %></td>
+          <td>
+            <% unless activity.status.in?(['approved', 'rejected']) %>
+              <!-- Only show the buttons if the budget is neither approved nor rejected -->
+              <div class="btn-group d-flex justify-content-between">
+  <button class="btn btn-success flex-fill" onclick="updateBudget(<%= activity.id %>, 'approved')">Approve</button>
+  <button class="btn btn-danger flex-fill" onclick="updateBudget(<%= activity.id %>, 'rejected')">Reject</button>
+</div>
+
+
+
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<%= link_to 'Back to Finance', finance_clubs_path, class: 'btn btn-primary mb-3 col-12' %>
